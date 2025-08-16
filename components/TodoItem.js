@@ -1,7 +1,11 @@
 import styled from "styled-components";
 
 export default function TodoItem({ todo, onToggle }) {
-  return <Item $completed={todo.completed} onClick={() => onToggle?.(todo.id)}>{todo.text}</Item>;
+  return (
+    <Item $completed={todo.completed} onClick={() => onToggle?.(todo.id)}>
+      {todo.text}
+    </Item>
+  );
 }
 
 const Item = styled.li`
