@@ -8,7 +8,10 @@ export default async function handler(req, res) {
   if (method === "GET") {
     try {
       const todos = await Todo.find().sort({ createdAt: -1 }).lean();
-      return res.status(200).json(todos);
+
+      return res
+        .status(200)
+        .json(todos.map(({ _id, ...t }) => ({ id: _id.toString(), ...t })));
     } catch (err) {
       console.error(err);
       return res.status(500).json({ error: "GET/todos failed" });
@@ -23,12 +26,15 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: "Bitte 'Text' senden." });
       }
       const created = await Todo.create({ text: clean, completed: false });
-      return res.status(201).json(created);
+      return res.status(201).json({
+        id: created._id.toString(),
+        text: created.text,
+      });
     } catch (err) {
       console.error(err);
       return res.status(500).json({ error: "POST / todos failed" });
     }
-}
-res.setHeader("Allow", ["GET", "POST"]);
-return res.status(405).json({ error: "Method Not Allowed" });
+  }
+  res.setHeader("Allow", ["GET", "POST"]);
+  return res.status(405).json({ error: "Method Not Allowed" });
 }

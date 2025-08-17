@@ -59,7 +59,7 @@ export default function HomePage() {
     if (!current) return;
 
     await fetch(`/api/todos/${id}`, {
-      method: "PATH",
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ completed: !current.completed }),
     });
