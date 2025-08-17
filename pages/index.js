@@ -3,38 +3,25 @@ import TodoList from "@/components/TodoList";
 import TodoForm from "@/components/TodoForm";
 import FilterBar from "@/components/FilterBar";
 import { useMemo, useState } from "react";
+import useSWR from "swr";
 
-const initialTodos = [
+/* const initialTodos = [
   { id: "1", text: "Äpfel kaufen", completed: false },
   { id: "2", text: "E-Mail schreiben", completed: true },
   { id: "3", text: "Laufen gehen", completed: false },
 ];
+ */
+
+const fetcher = (url) => fetch(url).then((r) => r.json());
 
 export default function HomePage() {
-  const [todos, setTodos] = useState(initialTodos);
+  //  const [todos, setTodos] = useState(initialTodos);
+  const { data, error, isLoading, mutate } = useSWR("/api/todos", fetcher);
+
   const [text, setText] = useState("");
   const [filter, setFilter] = useState("all");
 
-  function handleAdd(event) {
-    event.preventDefault();
-    const clean = text.trim();
-    if (!clean) return;
-
-    setTodos((prev) => [
-      ...prev,
-      { id: crypto.randomUUID(), text: clean, completed: false },
-    ]);
-    setText("");
-  }
-
-  function handleToggle(id) {
-    setTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
-    );
-  }
-  function handleDelete(id) {
-    setTodos((prev) => prev.filter((t) => t.id !== id));
-  }
+  const todos = data ?? [];
 
   const openCount = useMemo(
     () => todos.reduce((acc, t) => acc + (t.completed ? 0 : 1), 0),
@@ -46,6 +33,50 @@ export default function HomePage() {
     if (filter === "done") return todos.filter((t) => t.completed);
     return todos; // alle todos werden zurückgegeben
   }, [todos, filter]);
+
+  async function handleAdd(event) {
+    event.preventDefault();
+    const clean = text.trim();
+    if (!clean) return;
+
+    await fetch("/api/todos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: clean }),
+    });
+    setText("");
+    await mutate();
+
+    /* setTodos((prev) => [
+      ...prev,
+      { id: crypto.randomUUID(), text: clean, completed: false },
+    ]);
+    setText(""); */
+  }
+
+  async function handleToggle(id) {
+    const current = todos.find((t) => t.id === id);
+    if (!current) return;
+
+    await fetch(`/api/todos/${id}`, {
+      method: "PATH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ completed: !current.completed }),
+    });
+    await mutate();
+    /*  setTodos((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
+    ); */
+  }
+  async function handleDelete(id) {
+    await fetch(`/api/todos/${id}`, { method: "DELETE" });
+    await mutate();
+    /* setTodos((prev) => prev.filter((t) => t.id !== id)); */
+  }
+
+  if (error) return <p>Lehler beim Laden.</p>;
+  if (isLoading) return <p>Lade...</p>;
+
   return (
     <Main>
       <Title>To-Do</Title>
