@@ -6,14 +6,16 @@ import { authOptions } from "../auth/[...nextauth]";
 export default async function handler(req, res) {
   const session = await getServerSession(req, res, authOptions);
   if (!session) return res.status(401).json({ message: "Not authorized" });
-  
-  const userId = session.user.email
+
+  const userId = session.user.email;
   const { method } = req;
   await connectToDatabase();
 
   if (method === "GET") {
     try {
-      const todos = await Todo.find().sort({ createdAt: -1 }).lean();
+      const todos = await Todo.find({ userId: session.user.email })
+        .sort({ createdAt: -1 })
+        .lean();
 
       return res
         .status(200)
@@ -31,7 +33,11 @@ export default async function handler(req, res) {
       if (!clean) {
         return res.status(400).json({ error: "Bitte 'Text' senden." });
       }
-      const created = await Todo.create({ text: clean, completed: false });
+      const created = await Todo.create({
+        text: clean,
+        completed: false,
+        userId: session.user.email,
+      });
       return res.status(201).json({
         id: created._id.toString(),
         text: created.text,
