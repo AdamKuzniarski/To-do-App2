@@ -2,7 +2,7 @@ import TodoItem from "./TodoItem";
 import styled from "styled-components";
 
 export default function TodoList({ todos, onToggle, onDelete }) {
-  if (!todos?.length) return <Empty>Keine To-Dos.</Empty>;
+  if (!todos?.length) return <Empty>Wszystko kupione?</Empty>;
   return (
     <List>
       {todos.map((t) => (

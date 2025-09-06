@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   if (method === "GET") {
     try {
       const todos = await Todo.find({ userId: session.user.email })
-        .sort({ createdAt: -1 })
+        .sort({ createdAt: 1 })
         .lean();
 
       return res
