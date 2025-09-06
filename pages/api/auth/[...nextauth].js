@@ -6,12 +6,9 @@ export const authOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      authorization: { params: { prompt: "select_account" } },
     }),
   ],
-
   session: { strategy: "jwt" },
-  // Optional: eigene Seite für SignIn, wenn du willst
-  // pages: { signIn: "/signin" },
 };
-
 export default NextAuth(authOptions);
