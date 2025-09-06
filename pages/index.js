@@ -82,7 +82,7 @@ export default function HomePage() {
     <Page>
       <H1>Rybna Lista Zakupow</H1>
       <AuthButtons />
-      <Subtle>{openCount} jeszce do kupiena...</Subtle>
+      <Subtle>{openCount} jeszcze do kupiena...</Subtle>
       <SectionCard>
         <FilterBar value={filter} onChange={setFilter} />
       </SectionCard>
