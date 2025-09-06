@@ -6,7 +6,7 @@ export default function TodoList({ todos, onToggle, onDelete }) {
   return (
     <List>
       {todos.map((t) => (
-        <TodoItem key={t._id} todo={t} onToggle={onToggle} onDelete={onDelete} />
+        <TodoItem key={t.id} todo={t} onToggle={onToggle} onDelete={onDelete} />
       ))}
     </List>
   );
