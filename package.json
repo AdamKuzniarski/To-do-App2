@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "global": "^4.4.0",
     "mongodb": "^6.18.0",
     "mongoose": "^8.17.1",
     "moongoose": "^0.0.5",
@@ -16,6 +17,7 @@
     "next-auth": "^4.24.11",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "styled": "^1.0.0",
     "styled-components": "^6.1.19",
     "swr": "^2.3.6"
   },

@@ -4,6 +4,8 @@ import TodoForm from "@/components/TodoForm";
 import FilterBar from "@/components/FilterBar";
 import { useMemo, useState } from "react";
 import useSWR from "swr";
+import { useSession } from "next-auth/react";
+import AuthButtons from "@/components/AuthButtons";
 
 /* const initialTodos = [
   { id: "1", text: "Äpfel kaufen", completed: false },
@@ -16,7 +18,13 @@ const fetcher = (url) => fetch(url).then((r) => r.json());
 
 export default function HomePage() {
   //  const [todos, setTodos] = useState(initialTodos);
-  const { data, error, isLoading, mutate } = useSWR("/api/todos", fetcher);
+  
+  const { data: session, status } = useSession();
+
+  const { data, error, isLoading, mutate } = useSWR(
+  status === "authenticated" ? "/api/todos" : null,
+  fetcher
+);
 
   const [text, setText] = useState("");
   const [filter, setFilter] = useState("all");
@@ -77,9 +85,21 @@ export default function HomePage() {
   if (error) return <p>Lehler beim Laden.</p>;
   if (isLoading) return <p>Lade...</p>;
 
+  if (status === "loading") return <p>Lade…</p>;
+  if (!session) {
+    return (
+      <Main>
+        <Title>To-Do</Title>
+        <p>Bitte einloggen, um deine To-Dos zu sehen.</p>
+        <AuthButtons />
+      </Main>
+    );
+  }
+
   return (
     <Main>
       <Title>To-Do</Title>
+      <AuthButtons />
       <Counter>{openCount} offen</Counter>
       <FilterBar value={filter} onChange={setFilter} />
       <TodoForm value={text} onChange={setText} onSubmit={handleAdd} />
